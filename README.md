@@ -1,2 +1,2 @@
 # Csc332-Project
-Computer Store GUI
+Computer Store GUI made with python tkinker
