@@ -3,15 +3,9 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-# Todo: Fix error where variable names have pauses
 class User:
     # User type used to indicate what privileges a user has or doesn't
     userType = "Visitor"
-
-    # Placeholder function to debug and test that children classes have appropriate user type
-    @classmethod
-    def test_func(cls):
-        print("I am a,", cls.userType, "!")
 
 
 class RegisteredUser(User):
@@ -68,6 +62,15 @@ def writeAccountsToFile(userList):
     file.close()
 
 
+def appendAccountsToFile(newUser):
+    file = open("userList.txt","a+")
+    values = newUser.returnAllVariables()
+    for item in values:
+        file.write(str(item) + "|")
+    file.write("\n")
+    file.close()
+
+
 def readAccounts():
     lst = []
     file = open("userList.txt", "r")
@@ -93,7 +96,7 @@ def readAccounts():
 
 # Only runs code if running straight from script and not from an import
 if __name__ == '__main__':
-    registeredUserList = readAccounts()
 
+    registeredUserList = readAccounts()
     for userAccount in registeredUserList:
         print(userAccount)

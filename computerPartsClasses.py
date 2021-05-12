@@ -11,12 +11,14 @@ class StoreItem:
     name = ""
     company = ""
     price = 0.0
+    priceDisplay = ""
     amountSold = 0
 
     def __init__(self, name, company, price):
         self.name = name
         self.company = company
         self.price = price
+        self.priceDisplay = format(self.price, '.2f')
 
     def __str__(self):
         return self.itemType + " | " + self.name + " | " + self.company + " | " + str(self.price) + " | "
@@ -43,7 +45,7 @@ class RamItem(StoreItem):
 
 
 class GraphicsCardItem(StoreItem):
-    itemType = "Graphics Card"
+    itemType = "GPU"
     graphicsLine = ""
 
     def __init__(self, name, company, price, graphicsLine):
@@ -117,19 +119,19 @@ def generalFilter(itemList, filterList):  # Example: itemList, [ ["match",["comp
 if __name__ == '__main__':
 
     # region Insert random items into list
-    for i in range(2000000):
+    for i in range(200):
         listOfComputerParts.append(
             CpuItem("CpuItem" + str(i), returnRandomCompany(), decimal.Decimal(random.randrange(100, 200000)) / 100,
                     "2.5"))
 
-    for i in range(2000000):
+    for i in range(200):
         listOfComputerParts.append(
             RamItem("RamItem" + str(i), returnRandomCompany(), decimal.Decimal(random.randrange(100, 200000)) / 100,
                     "4 Gb", "DDR3"))
 
-    for i in range(2000000):
+    for i in range(200):
         listOfComputerParts.append(
-            GraphicsCardItem("RamItem" + str(i), returnRandomCompany(),
+            GraphicsCardItem("GpuItem" + str(i), returnRandomCompany(),
                              decimal.Decimal(random.randrange(100, 200000)) / 100, "RTX 2070"))
     # endregion
 

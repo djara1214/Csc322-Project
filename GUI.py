@@ -1,6 +1,3 @@
-import random
-import decimal
-
 import tkinter as tk
 import computerPartsClasses as comParts
 
@@ -599,7 +596,14 @@ def switchPages(openedPage, desiredPage):
     currentPage = desiredPage
 
 
-if __name__ == '__main__':
+def startGUI():
+    global root
+    global topMenu
+    global homePage
+    global loginPage
+    global registerPage
+    global computerPartsPage
+
     root = tk.Tk()
     root.title("TEST TITLE")
     root.geometry("854x480")
@@ -615,27 +619,5 @@ if __name__ == '__main__':
     homePage.insertMainFrame()
     topMenu.insertMainFrame()
 
-    # Sets up main item list
-
-    # region Insert random items into list
-    for i in range(20):
-        mainItemList.append(
-            comParts.CpuItem("CpuItem" + str(i), comParts.returnRandomCompany(),
-                             decimal.Decimal(random.randrange(100, 200000)) / 100,
-                             "2.5"))
-
-    for i in range(20):
-        mainItemList.append(
-            comParts.RamItem("RamItem" + str(i), comParts.returnRandomCompany(),
-                             decimal.Decimal(random.randrange(100, 200000)) / 100,
-                             "4 Gb", "DDR3"))
-
-    for i in range(20):
-        mainItemList.append(
-            comParts.GraphicsCardItem("GpuItem" + str(i), comParts.returnRandomCompany(),
-                                      decimal.Decimal(random.randrange(100, 200000)) / 100, "RTX 2070"))
 
 
-    # endregion
-
-    root.mainloop()
