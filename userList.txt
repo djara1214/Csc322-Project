@@ -1,0 +1,15 @@
+Registered User|test|password|0|False|
+Registered User|Cole0|pword|0|False|
+Registered User|fHills15|red54|0|False|
+Registered User|kod105|word17|0|False|
+Registered User|4yizo|pardon12!|0|False|
+Registered User|noModels|bear02|0|False|
+Registered User|LoveUrz|dog55|0|False|
+Store Clerk|Jermaine00|cat17|0|False|
+Store Clerk|Lamar00|giraffe24|0|False|
+Store Clerk|KEdward00|hippo87|0|False|
+Store Clerk|CSmiles00|lion42|0|False|
+Store Clerk|Gina00|parakeet05|0|False|
+Store Manager|Johany00|monkey14|0|False|
+Store Manager|Arielis00|snake09|0|False|
+Store Manager|Namir00|squirrel08|0|False|
