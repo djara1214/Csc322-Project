@@ -1,7 +1,9 @@
-# This is a sample Python script.
+# File name and location of user list
+userListFile = "userList.txt"
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Where current account will be stored
+currentAccount = 0
+
 
 class User:
     # User type used to indicate what privileges a user has or doesn't
@@ -50,9 +52,9 @@ class ComputerCompany(RegisteredUser):
 class DeliveryCompany(RegisteredUser):
     userType = "Delivery Company"
 
-
+# Overwrites all users in file and writes: O(n*k) Runtime (n is # of users and k is # of variables for each user)
 def writeAccountsToFile(userList):
-    file = open("userList.txt", "w")
+    file = open(userListFile, "w")
     for user in userList:
         values = user.returnAllVariables()
         for item in values:
@@ -62,8 +64,9 @@ def writeAccountsToFile(userList):
     file.close()
 
 
+# Add a single account to text file: O(1) Runtime
 def appendAccountsToFile(newUser):
-    file = open("userList.txt","a+")
+    file = open(userListFile,"a+")
     values = newUser.returnAllVariables()
     for item in values:
         file.write(str(item) + "|")
@@ -71,9 +74,10 @@ def appendAccountsToFile(newUser):
     file.close()
 
 
+# Gets all users and converts them to class objects before putting them in a list: O(n) Runtime
 def readAccounts():
     lst = []
-    file = open("userList.txt", "r")
+    file = open(userListFile, "r")
 
     for line in file:
         userVars = line.split("|")
@@ -94,9 +98,63 @@ def readAccounts():
     return lst
 
 
+# Returns bool based on if account exists: O(n) Runtime
+def checkIfAccountExists(username):
+    file = open(userListFile,"r")
+
+    for line in file:
+        userVars = line.split("|")
+        if userVars[1] == username:
+            file.close()
+            return True
+
+    file.close()
+    return False
+
+
+# Converts list with class variables to class object
+def convertToClassObject(userVar):
+    if userVar[0] == "Registered User":
+        return RegisteredUser(*userVar)
+    elif userVar[0] == "Store Clerk":
+        return StoreClerk(*userVar)
+    elif userVar[0] == "Store Manager":
+        return StoreManager(*userVar)
+    elif userVar[0] == "Computer Company":
+        return ComputerCompany(*userVar)
+    elif userVar[0] == "Delivery Company":
+        return DeliveryCompany(*userVar)
+
+
+# Looks for user and returns it
+def getAccount(username,password):
+    global userListFile
+
+    file = open(userListFile,"r")
+
+    for line in file:
+        userVars = line.split("|")
+        # Pops the "/n" that is at the end of every line
+        userVars.pop()
+        if userVars[1] == username and userVars[2] == password:
+            file.close()
+            return convertToClassObject(userVars)
+
+    file.close()
+    # If no account is found, 0 is returned to signal an error that the username or password was incorrect
+    return 0
+
+
+def switchAccounts(classObject):
+    global currentAccount
+
+    currentAccount = classObject
+
+
 # Only runs code if running straight from script and not from an import
 if __name__ == '__main__':
 
     registeredUserList = readAccounts()
     for userAccount in registeredUserList:
         print(userAccount)
+

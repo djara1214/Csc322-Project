@@ -1,5 +1,8 @@
 import tkinter as tk
-import computerPartsClasses as comParts
+from tkinter import messagebox
+
+from computerPartsClasses import generalFilter as comParts
+import userClasses as userClass
 
 # Todo: Create and Design Cart
 # Todo: Show page number
@@ -47,6 +50,8 @@ class TopMenu:
 
     # Title Label
     titleLabel = 0
+    # Label that displays name
+    usernameWelcomeLabel = 0
 
     # Buttons for login, register, and cart
     loginButton = 0
@@ -88,6 +93,10 @@ class TopMenu:
         self.titleLabel = tk.Label(self.mainFrame,text="Cook n' Look",fg=titleFontColor,bg=topMenuWebsiteColor,font=(self.mainTitleFont,self.mainTitleFontSize))
         self.titleLabel.place(relx=0.25,rely=0.15)
 
+        self.usernameWelcomeLabel = tk.Label(self.mainFrame,fg=titleFontColor,bg=topMenuWebsiteColor,font=(self.subtitleFont,self.subtitleFontSize))
+        self.usernameWelcomeLabel.place(relx=0.5,rely=0.5)
+        self.updateWelcomeLabel()
+
     def insertLoginRegisterButton(self):
         self.loginRegisterFrame = tk.Frame(self.mainFrame,bg=topMenuSecondaryWebsiteColor)
         self.loginRegisterFrame.place(relx=0.8,rely=0.5,relwidth=0.2,relheight=0.2)
@@ -106,9 +115,14 @@ class TopMenu:
         self.forumsButton = tk.Button(self.mainMenuFrame,text="Forums",font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=2,padx=self.mainMenuPadX)
         self.accountInformationButton = tk.Button(self.mainMenuFrame,text="Account Information",font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=3,padx=self.mainMenuPadX)
 
+    def updateWelcomeLabel(self):
+        if userClass.currentAccount == 0:
+            self.usernameWelcomeLabel["text"] = "Welcome, Guest!"
+        else:
+            self.usernameWelcomeLabel["text"] = "Welcome, "+userClass.currentAccount.userName+"!"
+
 
 class HomePage:
-    global primaryWebsiteColor
     global currentPageColor
     global frameColor
     mainFrame = 0
@@ -184,6 +198,8 @@ class HomePage:
 
 
 class LoginPage:
+    global currentPageColor
+
     mainFrame = 0
 
     usernameLabel = 0
@@ -200,7 +216,7 @@ class LoginPage:
     subTitleFontSize = 30
 
     def __init__(self, tkRoot):
-        self.mainFrame = tk.Frame(tkRoot, bg='yellow')
+        self.mainFrame = tk.Frame(tkRoot, bg=currentPageColor)
         self.createLoginPage()
 
     def insertMainFrame(self):
@@ -211,16 +227,39 @@ class LoginPage:
         self.mainFrame.place_forget()
 
     def createLoginPage(self):
-        self.usernameLabel = tk.Label(self.mainFrame,text="Username",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.2)
-        self.usernameEntry = tk.Entry(self.mainFrame).place(relx=0.45,rely=0.2,relwidth=0.25,relheight=0.1)
+        self.usernameLabel = tk.Label(self.mainFrame,text="Username",font=(self.subTitleFont,self.subTitleFontSize))
+        self.usernameLabel.place(relx=0.25,rely=0.2)
+        self.usernameEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.usernameEntry.place(relx=0.45,rely=0.2,relwidth=0.25,relheight=0.1)
 
-        self.passwordLabel = tk.Label(self.mainFrame, text="Password",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.6)
-        self.passwordEntry = tk.Entry(self.mainFrame).place(relx=0.45,rely=0.6,relwidth=0.25,relheight=0.1)
+        self.passwordLabel = tk.Label(self.mainFrame, text="Password",font=(self.subTitleFont,self.subTitleFontSize))
+        self.passwordLabel.place(relx=0.25,rely=0.6)
+        self.passwordEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.passwordEntry.place(relx=0.45,rely=0.6,relwidth=0.25,relheight=0.1)
 
-        self.loginButton = tk.Button(self.mainFrame, text="Login",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.4,rely=0.8)
+        self.loginButton = tk.Button(self.mainFrame, text="Login",command=self.attemptLoginInformation,font=(self.subTitleFont,self.subTitleFontSize))
+        self.loginButton.place(relx=0.4,rely=0.8)
+
+    def attemptLoginInformation(self):
+        global topMenu
+        global loginPage
+        global homePage
+
+        usernameEntryInput = self.usernameEntry.get()
+        passwordEntryInput = self.passwordEntry.get()
+
+        userObject = userClass.getAccount(usernameEntryInput,passwordEntryInput)
+        if userObject == 0:
+            tk.messagebox.showwarning(title="Uh-oh", message="Wrong Username Or Password")
+        else:
+            userClass.switchAccounts(userObject)
+            topMenu.updateWelcomeLabel()
+            switchPages(currentPage,"homePage")
 
 
 class RegisterPage:
+    global currentPageColor
+
     mainFrame = 0
 
     usernameLabel = 0
@@ -239,7 +278,7 @@ class RegisterPage:
     subTitleFontSize = 30
 
     def __init__(self, tkRoot):
-        self.mainFrame = tk.Frame(tkRoot, bg='yellow')
+        self.mainFrame = tk.Frame(tkRoot, bg=currentPageColor)
         self.createRegisterPage()
 
     def insertMainFrame(self):
@@ -251,13 +290,13 @@ class RegisterPage:
 
     def createRegisterPage(self):
         self.usernameLabel = tk.Label(self.mainFrame,text="Username",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.1)
-        self.usernameEntry = tk.Entry(self.mainFrame).place(relx=0.45,rely=0.1,relwidth=0.25,relheight=0.1)
+        self.usernameEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.45,rely=0.1,relwidth=0.25,relheight=0.1)
 
         self.passwordLabel = tk.Label(self.mainFrame, text="Password",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.3)
-        self.passwordEntry = tk.Entry(self.mainFrame).place(relx=0.45,rely=0.3,relwidth=0.25,relheight=0.1)
+        self.passwordEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.45,rely=0.3,relwidth=0.25,relheight=0.1)
 
         self.retypeLabel = tk.Label(self.mainFrame, text="Retype Password",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.5)
-        self.retypeEntry = tk.Entry(self.mainFrame).place(relx=0.45,rely=0.5,relwidth=0.25,relheight=0.1)
+        self.retypeEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.45,rely=0.5,relwidth=0.25,relheight=0.1)
 
         self.createAccountButton = tk.Button(self.mainFrame, text="Create Account",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.4,rely=0.7)
 
@@ -356,6 +395,7 @@ class ComputerPartsPage:
 
     # This is used so that the next button would list the next 50 in the filtered item and the last 50
     listPage = 0
+    canPressNext = True
 
     # Listing widgets
     previousButton = 0
@@ -499,7 +539,8 @@ class ComputerPartsPage:
         self.revertFilterButton = tk.Button(self.filterFrame,text="Revert",font=(self.titleFont,self.titleFontSize),command=self.revertFilters).grid(row=8,column=2,columnspan=2,padx=self.filterPadXLeft,pady=self.filterTitlePadY)
 
     def updateListings(self):
-        listToDisplay = []
+        # Allows next button to be pressed unless
+        self.canPressNext = True
 
         if len(filteredItemList) == 0:
             listToDisplay = mainItemList
@@ -510,12 +551,14 @@ class ComputerPartsPage:
             listingIndex = index + (50 * self.listPage)
             if index >= len(listToDisplay) - (50 * self.listPage):
                 self.listOfItemListings[index].mainFrame.grid_forget()
+                self.canPressNext = False
             else:
                 self.listOfItemListings[index].updateListing(listToDisplay[listingIndex].name,"Company: "+listToDisplay[listingIndex].company,"Computer Part: "+listToDisplay[listingIndex].itemType,"$ "+listToDisplay[listingIndex].priceDisplay)
                 self.listOfItemListings[index].mainFrame.grid(row=index + 1, column=0, columnspan=2, padx=self.listingPadX, pady=self.listingPadY)
 
     def increaseListPage(self):
-        self.listPage += 1
+        if self.canPressNext:
+            self.listPage += 1
         self.updateListings()
 
         # Automatically scrolls to the top
@@ -531,6 +574,9 @@ class ComputerPartsPage:
 
     def applyFilters(self):
         global filteredItemList
+
+        # Returns the page number to 0
+        self.listPage = 0
 
         # Matching section of filtering
         argumentToApply = [["match",[],[]]]
@@ -572,9 +618,11 @@ class ComputerPartsPage:
         if argumentToApply[indexToInsert][1] == []:
             argumentToApply.pop(indexToInsert)
 
-        filteredItemList = comParts.generalFilter(mainItemList,argumentToApply)
-        print(argumentToApply)
+        filteredItemList = comParts(mainItemList,argumentToApply)
         self.updateListings()
+
+        # Moves scrollbar back to top
+        self.mainCanvas.yview_moveto(0)
 
     def revertFilters(self):
         global filteredItemList
@@ -582,6 +630,9 @@ class ComputerPartsPage:
         filteredItemList.clear()
         self.listPage = 0
         self.updateListings()
+
+        # Moves scrollbar back to top
+        self.mainCanvas.yview_moveto(0)
 
 
 def switchPages(openedPage, desiredPage):
