@@ -22,20 +22,20 @@ if __name__ == '__main__':
     # region Insert random items into list
     for i in range(200):
         mainItemList.append(
-            comParts.CpuItem("CpuItem" + str(i), comParts.returnRandomCompany(),
-                             decimal.Decimal(random.randrange(100, 200000)) / 100,
+            comParts.CpuItem("CPU","CpuItem" + str(i), comParts.returnRandomCompany(),
+                             decimal.Decimal(random.randrange(100, 200000)) / 100,0,
                              "2.5"))
 
     for i in range(200):
         mainItemList.append(
-            comParts.RamItem("RamItem" + str(i), comParts.returnRandomCompany(),
-                             decimal.Decimal(random.randrange(100, 200000)) / 100,
+            comParts.RamItem("RAM","RamItem" + str(i), comParts.returnRandomCompany(),
+                             decimal.Decimal(random.randrange(100, 200000)) / 100,0,
                              "4 Gb", "DDR3"))
 
     for i in range(200):
         mainItemList.append(
-            comParts.GraphicsCardItem("GpuItem" + str(i), comParts.returnRandomCompany(),
-                                      decimal.Decimal(random.randrange(100, 200000)) / 100, "RTX 2070"))
+            comParts.GraphicsCardItem("GPU","GpuItem" + str(i), comParts.returnRandomCompany(),
+                                      decimal.Decimal(random.randrange(100, 200000)) / 100,0, "RTX 2070"))
 
     # endregion
 

@@ -14,11 +14,13 @@ class StoreItem:
     priceDisplay = ""
     amountSold = 0
 
-    def __init__(self, name, company, price):
+    def __init__(self,itemType,name,company,price,amountSold):
+        self.itemType = itemType
         self.name = name
         self.company = company
         self.price = price
         self.priceDisplay = format(self.price, '.2f')
+        self.amountSold = amountSold
 
     def __str__(self):
         return self.itemType + " | " + self.name + " | " + self.company + " | " + str(self.price) + " | "
@@ -28,8 +30,8 @@ class CpuItem(StoreItem):
     itemType = "CPU"
     GHz = ""
 
-    def __init__(self, name, company, price, GHz):
-        super(CpuItem, self).__init__(name, company, price)
+    def __init__(self,itemType,name,company,price,amountSold,GHz):
+        super(CpuItem, self).__init__(itemType,name, company, price,amountSold)
         self.GHz = GHz
 
 
@@ -38,8 +40,8 @@ class RamItem(StoreItem):
     capacity = ""
     speed = ""
 
-    def __init__(self, name, company, price, capacity, speed):
-        super(RamItem, self).__init__(name, company, price)
+    def __init__(self,itemType,name,company,price,amountSold,capacity,speed):
+        super(RamItem, self).__init__(itemType,name,company,price,amountSold)
         self.capacity = capacity
         self.speed = speed
 
@@ -48,9 +50,16 @@ class GraphicsCardItem(StoreItem):
     itemType = "GPU"
     graphicsLine = ""
 
-    def __init__(self, name, company, price, graphicsLine):
-        super(GraphicsCardItem, self).__init__(name, company, price)
+    def __init__(self,itemType,name,company,price,amountSold,graphicsLine):
+        super(GraphicsCardItem, self).__init__(itemType,name,company,price,amountSold)
         self.graphicsLine = graphicsLine
+
+
+class CaseItem(StoreItem):
+    itemType = "Case"
+
+    def __init__(self,itemType,name,company,price,amountSold):
+        super(GraphicsCardItem, self).__init__(itemType,name,company,price,amountSold)
 
 
 # endregion
@@ -117,39 +126,4 @@ def generalFilter(itemList, filterList):  # Example: itemList, [ ["match",["comp
 
 
 if __name__ == '__main__':
-
-    # region Insert random items into list
-    for i in range(200):
-        listOfComputerParts.append(
-            CpuItem("CpuItem" + str(i), returnRandomCompany(), decimal.Decimal(random.randrange(100, 200000)) / 100,
-                    "2.5"))
-
-    for i in range(200):
-        listOfComputerParts.append(
-            RamItem("RamItem" + str(i), returnRandomCompany(), decimal.Decimal(random.randrange(100, 200000)) / 100,
-                    "4 Gb", "DDR3"))
-
-    for i in range(200):
-        listOfComputerParts.append(
-            GraphicsCardItem("GpuItem" + str(i), returnRandomCompany(),
-                             decimal.Decimal(random.randrange(100, 200000)) / 100, "RTX 2070"))
-    # endregion
-
-    print("Done")
-
-    t0 = time.process_time()
-
-    print("___________________________________COMPANY NAME FILTERED_____________________________________")
-    newList = matchKeywordsFilter(listOfComputerParts,["company"],["AMD"])
-    print("Done")
-
-    print("___________________________________PRICE FILTERED_____________________________________")
-    newList = rangeFilter(listOfComputerParts,"price",100,800)
-    print("Done")
-
-    print("___________________________________BOTH FILTERED_____________________________________")
-    newList = generalFilter(listOfComputerParts,[ ["match",["company"],["AMD"]], ["range","price",100,500] ])
-    print("Done")
-
-    t1 = time.process_time() - t0
-    print("Time elapsed: ", t1)
+    print("Placeholder")

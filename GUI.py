@@ -5,7 +5,7 @@ from computerPartsClasses import generalFilter as comParts
 import userClasses as userClass
 
 # Todo: Create and Design Cart
-# Todo: Add user account creation
+# Todo: Create and Connect Forums Page
 
 # Global Website Attributes
 topMenuWebsiteColor = "#002733"
@@ -92,20 +92,23 @@ class TopMenu:
     def insertLoginRegisterButton(self):
         self.loginRegisterFrame = tk.Frame(self.mainFrame,bg=topMenuSecondaryWebsiteColor)
         self.loginRegisterFrame.place(relx=0.8,rely=0.5,relwidth=0.2,relheight=0.2)
-        self.loginButton = tk.Button(self.loginRegisterFrame, text="Login",command=lambda: switchPages(currentPage, "loginPage"),font=(self.loginButtonFont, self.loginButtonFontSize))
-        self.logoutButton = tk.Button(self.loginRegisterFrame, text="Log out",command=logUserOut,font=(self.loginButtonFont, self.loginButtonFontSize))
+        self.loginButton = tk.Button(self.loginRegisterFrame, text="Sign in",command=lambda: switchPages(currentPage, "loginPage"),font=(self.loginButtonFont, self.loginButtonFontSize))
+        self.logoutButton = tk.Button(self.loginRegisterFrame, text="Sign out",command=logUserOut,font=(self.loginButtonFont, self.loginButtonFontSize))
+        self.registerButton = tk.Button(self.loginRegisterFrame, text="Register",command=lambda: switchPages(currentPage, "registerPage"),font=(self.loginButtonFont, self.loginButtonFontSize))
+        self.cartButton = tk.Button(self.loginRegisterFrame,text="Cart", command=lambda: switchPages(currentPage,"cartPage"),font=(self.loginButtonFont,self.loginButtonFontSize))
+        self.cartButton.grid(row=0,column=0,padx=self.loginRegisterPadX)
+
         self.insertLoginOrLogoutButton()
-        self.cartButton = tk.Button(self.loginRegisterFrame,text="Cart", command=lambda: switchPages(currentPage,"cartPage"),font=(self.loginButtonFont,self.loginButtonFontSize)).grid(row=0,column=0,padx=self.loginRegisterPadX)
 
-        self.registerButton = tk.Button(self.loginRegisterFrame,text="Register",command=lambda: switchPages(currentPage,"registerPage"),font=(self.loginButtonFont,self.loginButtonFontSize)).grid(row=0,column=2,padx=self.loginRegisterPadX)
-
+    # Enables and disables login and register button based on if an account is signed in
     def insertLoginOrLogoutButton(self):
-        print("It Passed!")
         if userClass.currentAccount == 0:
             self.logoutButton.grid_forget()
             self.loginButton.grid(row=0, column=1,padx=self.loginRegisterPadX)
+            self.registerButton.grid(row=0, column=2, padx=self.loginRegisterPadX)
         else:
             self.loginButton.grid_forget()
+            self.registerButton.grid_forget()
             self.logoutButton.grid(row=0, column=1, padx=self.loginRegisterPadX)
 
     def insertDropDownMenus(self):
@@ -114,9 +117,8 @@ class TopMenu:
 
         self.homeButton = tk.Button(self.mainMenuFrame,text="Home",command=lambda: switchPages(currentPage, "homePage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=0,padx=self.mainMenuPadX)
         self.computerPartsButton = tk.Button(self.mainMenuFrame,text="Computer Parts",command=lambda: switchPages(currentPage, "computerPartsPage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=1,padx=self.mainMenuPadX)
-        # Todo: Create and Connect Forums Page
         self.forumsButton = tk.Button(self.mainMenuFrame,text="Forums",font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=2,padx=self.mainMenuPadX)
-        self.accountInformationButton = tk.Button(self.mainMenuFrame,text="Account Information",font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=3,padx=self.mainMenuPadX)
+        self.accountInformationButton = tk.Button(self.mainMenuFrame,text="Account",command=lambda: switchPages(currentPage, "accountPage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=3,padx=self.mainMenuPadX)
 
     def updateWelcomeLabel(self):
         if userClass.currentAccount == 0:
@@ -230,7 +232,7 @@ class LoginPage:
         self.mainFrame.place_forget()
 
     def createLoginPage(self):
-        self.usernameLabel = tk.Label(self.mainFrame,text="Username",font=(self.subTitleFont,self.subTitleFontSize))
+        self.usernameLabel = tk.Label(self.mainFrame,text="Email Address",font=(self.subTitleFont,self.subTitleFontSize))
         self.usernameLabel.place(relx=0.25,rely=0.2)
         self.usernameEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
         self.usernameEntry.place(relx=0.45,rely=0.2,relwidth=0.25,relheight=0.1)
@@ -246,6 +248,7 @@ class LoginPage:
     def attemptLoginInformation(self):
         global topMenu
         global loginPage
+        global accountPage
         global homePage
 
         usernameEntryInput = self.usernameEntry.get()
@@ -257,6 +260,7 @@ class LoginPage:
         else:
             userClass.switchAccounts(userObject)
             topMenu.updateWelcomeLabel()
+            accountPage.updateAccountInformation()
             topMenu.insertLoginOrLogoutButton()
             switchPages(currentPage,"homePage")
 
@@ -266,12 +270,16 @@ class RegisterPage:
 
     mainFrame = 0
 
+    emailAddressLabel = 0
+    emailAddressEntry = 0
     usernameLabel = 0
     usernameEntry = 0
     passwordLabel = 0
     passwordEntry = 0
     retypeLabel = 0
     retypeEntry = 0
+    balanceLabel = 0
+    balanceEntry = 0
     createAccountButton = 0
 
     # Login Page Attributes
@@ -293,16 +301,72 @@ class RegisterPage:
         self.mainFrame.place_forget()
 
     def createRegisterPage(self):
-        self.usernameLabel = tk.Label(self.mainFrame,text="Username",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.1)
-        self.usernameEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.45,rely=0.1,relwidth=0.25,relheight=0.1)
+        self.emailAddressLabel = tk.Label(self.mainFrame,text="Email Address",font=(self.subTitleFont,self.subTitleFontSize))
+        self.emailAddressLabel.place(relx=0.25,rely=0.05)
+        self.emailAddressEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.emailAddressEntry.place(relx=0.45,rely=0.05,relwidth=0.25,relheight=0.1)
 
-        self.passwordLabel = tk.Label(self.mainFrame, text="Password",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.3)
-        self.passwordEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.45,rely=0.3,relwidth=0.25,relheight=0.1)
+        self.usernameLabel = tk.Label(self.mainFrame,text="Name",font=(self.subTitleFont,self.subTitleFontSize))
+        self.usernameLabel.place(relx=0.25,rely=0.2)
+        self.usernameEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.usernameEntry.place(relx=0.45,rely=0.2,relwidth=0.25,relheight=0.1)
 
-        self.retypeLabel = tk.Label(self.mainFrame, text="Retype Password",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.25,rely=0.5)
-        self.retypeEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.45,rely=0.5,relwidth=0.25,relheight=0.1)
+        self.passwordLabel = tk.Label(self.mainFrame, text="Password",font=(self.subTitleFont,self.subTitleFontSize))
+        self.passwordLabel.place(relx=0.25,rely=0.35)
+        self.passwordEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.passwordEntry.place(relx=0.45,rely=0.35,relwidth=0.25,relheight=0.1)
 
-        self.createAccountButton = tk.Button(self.mainFrame, text="Create Account",font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.4,rely=0.7)
+        self.retypeLabel = tk.Label(self.mainFrame, text="Retype Password",font=(self.subTitleFont,self.subTitleFontSize))
+        self.retypeLabel.place(relx=0.25,rely=0.5)
+        self.retypeEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.retypeEntry.place(relx=0.45,rely=0.5,relwidth=0.25,relheight=0.1)
+
+        self.balanceLabel = tk.Label(self.mainFrame, text="Enter a Starting Balance",font=(self.subTitleFont,self.subTitleFontSize))
+        self.balanceLabel.place(relx=0.20,rely=0.65)
+        self.balanceEntry = tk.Entry(self.mainFrame,font=(self.subTitleFont,self.subTitleFontSize))
+        self.balanceEntry.place(relx=0.45,rely=0.65,relwidth=0.25,relheight=0.1)
+
+        self.createAccountButton = tk.Button(self.mainFrame, text="Create Account",command=self.attemptRegisterInformation,font=(self.subTitleFont,self.subTitleFontSize)).place(relx=0.4,rely=0.8)
+
+    def attemptRegisterInformation(self):
+        global topMenu
+        global registerPage
+        global homePage
+
+        emailEntryInput = self.emailAddressEntry.get()
+        usernameEntryInput = self.usernameEntry.get()
+        passwordEntryInput = self.passwordEntry.get()
+        retypeEntryInput = self.retypeEntry.get()
+        balanceEntryInput = self.balanceEntry.get()
+
+        # Bool that switches to true once all the inputs are checked
+        passesPasswordCheck = False
+        passesBalanceCheck = False
+        passesEmptyEntryCheck = False
+
+        if passwordEntryInput == retypeEntryInput:
+            passesPasswordCheck = True
+        if int(balanceEntryInput) > 0:
+            passesBalanceCheck = True
+        if len(emailEntryInput) > 0 and len(usernameEntryInput) > 0 and len(passwordEntryInput) > 0 and len(retypeEntryInput) > 0 and len(balanceEntryInput) > 0:
+            passesEmptyEntryCheck = True
+
+        if passesPasswordCheck and passesBalanceCheck and passesEmptyEntryCheck:
+            userClass.createAccount(emailEntryInput, usernameEntryInput, passwordEntryInput, balanceEntryInput)
+
+            if userClass.currentAccount == 0:
+                tk.messagebox.showwarning(title="Uh-oh", message="Looks like this email is already taken.")
+            else:
+                topMenu.updateWelcomeLabel()
+                topMenu.insertLoginOrLogoutButton()
+                accountPage.updateAccountInformation()
+                switchPages(currentPage, "homePage")
+        elif not passesPasswordCheck:
+            tk.messagebox.showwarning(title="Uh-oh", message="Your passwords do not match.")
+        elif not passesBalanceCheck:
+            tk.messagebox.showwarning(title="Uh-oh", message="Your balance is not a number above 0.")
+        elif not passesEmptyEntryCheck:
+            tk.messagebox.showwarning(title="Uh-oh", message="One or more of your fields are empty.")
 
 
 # Helper class used by Computer Parts Page Class
@@ -639,6 +703,89 @@ class ComputerPartsPage:
         self.mainCanvas.yview_moveto(0)
 
 
+class AccountPage:
+    global currentPageColor
+    global frameColor
+    mainFrame = 0
+
+    scrollable_frame = 0
+    scrollbar = 0
+
+    # Page Variables
+    emailLabel = 0
+    userNameLabel = 0
+    warningsLabel = 0
+    currentBalanceLabel = 0
+    # GUI Attributes
+    titleFont = "Arial"
+    titleFontSize = 30
+    canvasSize = 300
+    accountInfoPaddingY = 20
+
+    def __init__(self, tkRoot):
+        self.mainFrame = tk.Frame(tkRoot, bg=currentPageColor)
+
+        canvas = tk.Canvas(self.mainFrame, bg=currentPageColor)
+
+        self.scrollbar = tk.Scrollbar(self.mainFrame, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = tk.Frame(canvas, bg=currentPageColor)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+
+        # Section which adds all the features
+        self.createMainPage()
+
+    def insertMainFrame(self):
+        relativeY = 0.2
+        self.mainFrame.place(rely=relativeY,relwidth=1,relheight=1-relativeY)
+
+    def removeMainFrame(self):
+        self.mainFrame.place_forget()
+
+    def createMainPage(self):
+        accountInfoLabel = tk.Label(self.scrollable_frame,text="Account Information",font=(self.titleFont,self.titleFontSize))
+        accountInfoLabel.grid(row=0,column=0)
+
+        tk.Label(self.scrollable_frame,text="Email: ",font=(self.titleFont,self.titleFontSize)).grid(row=1,column=1,pady=self.accountInfoPaddingY)
+        self.emailLabel = tk.Label(self.scrollable_frame,text="",font=(self.titleFont,self.titleFontSize))
+        self.emailLabel.grid(row=1,column=2,pady=self.accountInfoPaddingY)
+
+        tk.Label(self.scrollable_frame, text="Name: ", font=(self.titleFont, self.titleFontSize)).grid(row=2,column=1,pady=self.accountInfoPaddingY)
+        self.userNameLabel = tk.Label(self.scrollable_frame,text="",font=(self.titleFont,self.titleFontSize))
+        self.userNameLabel.grid(row=2,column=2,pady=self.accountInfoPaddingY)
+
+        tk.Label(self.scrollable_frame, text="Warnings: ", font=(self.titleFont, self.titleFontSize)).grid(row=3,column=1,pady=self.accountInfoPaddingY)
+        self.warningsLabel = tk.Label(self.scrollable_frame,text="",font=(self.titleFont,self.titleFontSize))
+        self.warningsLabel.grid(row=3,column=2,pady=self.accountInfoPaddingY)
+
+        tk.Label(self.scrollable_frame, text="Current Balance: ", font=(self.titleFont, self.titleFontSize)).grid(row=4,column=1,pady=self.accountInfoPaddingY)
+        self.currentBalanceLabel = tk.Label(self.scrollable_frame,text="",font=(self.titleFont,self.titleFontSize))
+        self.currentBalanceLabel.grid(row=4,column=2,pady=self.accountInfoPaddingY)
+
+    def updateAccountInformation(self):
+        if userClass.currentAccount != 0:
+            self.emailLabel['text'] = userClass.currentAccount.email
+            self.userNameLabel['text'] = userClass.currentAccount.userName
+            self.warningsLabel['text'] = str(userClass.currentAccount.warnings)
+            self.currentBalanceLabel['text'] = "$ "+str(format(userClass.currentAccount.currentBalance, '.2f'))
+        else:
+            self.emailLabel['text'] = ""
+            self.userNameLabel['text'] = ""
+            self.warningsLabel['text'] = ""
+            self.currentBalanceLabel['text'] = ""
+
+
 def switchPages(openedPage, desiredPage):
     global currentPage
 
@@ -653,10 +800,12 @@ def switchPages(openedPage, desiredPage):
 
 def logUserOut():
     global topMenu
+    global accountPage
 
     userClass.currentAccount = 0
     topMenu.insertLoginOrLogoutButton()
     topMenu.updateWelcomeLabel()
+    accountPage.updateAccountInformation()
 
 
 # Global Website Variables
@@ -666,6 +815,7 @@ topMenu = TopMenu(root)
 homePage = HomePage(root)
 loginPage = LoginPage(root)
 registerPage = RegisterPage(root)
+accountPage = AccountPage(root)
 computerPartsPage = ComputerPartsPage(root)
 
 

@@ -9,6 +9,7 @@ class User:
 
 class RegisteredUser(User):
     userType = "Registered User"
+    email = ""
     userName = ""
     password = ""
 
@@ -18,9 +19,10 @@ class RegisteredUser(User):
     currentBalance = 0
 
     # Initialization of class
-    def __init__(self,userType,userName,password,warnings,suspended,balance):
+    def __init__(self,userType,email,userName,password,warnings,suspended,balance):
         self.userType = userType
 
+        self.email = email
         self.userName = userName
         self.password = password
 
@@ -65,7 +67,7 @@ def writeAccountsToFile(userList):
 
 
 # Add a single account to text file: O(1) Runtime
-def appendAccountsToFile(newUser):
+def appendAccountToFile(newUser):
     file = open(userListFile,"a+")
     values = newUser.returnAllVariables()
     for item in values:
@@ -99,12 +101,12 @@ def readAccounts():
 
 
 # Returns bool based on if account exists: O(n) Runtime
-def checkIfAccountExists(username):
+def checkIfAccountExists(email):
     file = open(userListFile,"r")
 
     for line in file:
         userVars = line.split("|")
-        if userVars[1] == username:
+        if userVars[1] == email:
             file.close()
             return True
 
@@ -127,7 +129,7 @@ def convertToClassObject(userVar):
 
 
 # Looks for user and returns it
-def getAccount(username,password):
+def getAccount(email,password):
     global userListFile
 
     file = open(userListFile,"r")
@@ -136,13 +138,41 @@ def getAccount(username,password):
         userVars = line.split("|")
         # Pops the "/n" that is at the end of every line
         userVars.pop()
-        if userVars[1] == username and userVars[2] == password:
+        if userVars[1] == email and userVars[3] == password:
             file.close()
             return convertToClassObject(userVars)
 
     file.close()
     # If no account is found, 0 is returned to signal an error that the username or password was incorrect
     return 0
+
+
+def getAccountWithEmail(email):
+    file = open(userListFile,"r")
+
+    for line in file:
+        userVars = line.split("|")
+        # Pops the "/n" that is at the end of every line
+        userVars.pop()
+        if userVars[1] == email:
+            file.close()
+            return convertToClassObject(userVars)
+
+    file.close()
+    # If no account is found, 0 is returned to signal an error that the username or password was incorrect
+    return 0
+
+
+def createAccount(email,username,password,balance):
+    global currentAccount
+    foundAccount = getAccountWithEmail(email)
+
+    # After checking for account, if it is not 0 then it means an account was found
+    if foundAccount != 0:
+        currentAccount = 0
+    else:
+        currentAccount = RegisteredUser("Registered User",email,username,password,0,False,balance)
+        appendAccountToFile(currentAccount)
 
 
 def switchAccounts(classObject):
@@ -155,10 +185,34 @@ def switchAccounts(classObject):
 currentAccount = 0
 
 
+def overwriteUser(userInstance):
+    file = open(userListFile, 'r')
+
+    # read a list of lines into data
+    data = file.readlines()
+
+    file.close()
+    for line in range(len(data)):
+        values = data[line].split("|")
+        if values[1] == userInstance.email:
+            print("YES")
+            data[line] = ""
+            userInstanceVars = userInstance.returnAllVariables()
+            for item in userInstanceVars:
+                data[line] += (str(item) + "|")
+            data[line] += "\n"
+
+    file = open(userListFile, 'w')
+    file.writelines(data)
+
+
 # Only runs code if running straight from script and not from an import
 if __name__ == '__main__':
 
-    registeredUserList = readAccounts()
-    for userAccount in registeredUserList:
-        print(userAccount)
+    # Example code for overwriting account
+    registeredUser = getAccountWithEmail("test@gmail.com")
+    registeredUser.warnings = 0
+
+    overwriteUser(registeredUser)
+
 

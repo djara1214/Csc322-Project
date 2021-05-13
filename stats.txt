@@ -1,4 +1,4 @@
-Registered User|test@gmail.com|test|password|0|False|200.0|
+Registered User|test@gmail.com|test|password|1|False|200.0|
 Registered User|email01@gmail.com|Cole|pword|0|False|200|
 Registered User|email02@gmail.com|fHills15|red54|0|False|200|
 Registered User|email03@gmail.com|kod105|word17|0|False|200|

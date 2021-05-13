@@ -23,6 +23,7 @@ class Comment:
 #     current_comment = ForumsData(0, comment, userClass.currentAccount.userName)
 #     ForumPage1.append(current_comment)
 
+
 def WriteToForum(comment):
     file = open(Forums, "a")
     values = comment
