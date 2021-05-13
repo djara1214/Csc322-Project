@@ -5,16 +5,7 @@ from computerPartsClasses import generalFilter as comParts
 import userClasses as userClass
 
 # Todo: Create and Design Cart
-# Todo: Show page number
 # Todo: Add user account creation
-# Global Website Variables
-root = 0
-topMenu = 0
-homePage = 0
-cartPage = 0
-loginPage = 0
-registerPage = 0
-computerPartsPage = 0
 
 # Global Website Attributes
 topMenuWebsiteColor = "#002733"
@@ -55,6 +46,7 @@ class TopMenu:
 
     # Buttons for login, register, and cart
     loginButton = 0
+    logoutButton = 0
     registerButton = 0
     cartButton = 0
 
@@ -100,10 +92,21 @@ class TopMenu:
     def insertLoginRegisterButton(self):
         self.loginRegisterFrame = tk.Frame(self.mainFrame,bg=topMenuSecondaryWebsiteColor)
         self.loginRegisterFrame.place(relx=0.8,rely=0.5,relwidth=0.2,relheight=0.2)
-
+        self.loginButton = tk.Button(self.loginRegisterFrame, text="Login",command=lambda: switchPages(currentPage, "loginPage"),font=(self.loginButtonFont, self.loginButtonFontSize))
+        self.logoutButton = tk.Button(self.loginRegisterFrame, text="Log out",command=logUserOut,font=(self.loginButtonFont, self.loginButtonFontSize))
+        self.insertLoginOrLogoutButton()
         self.cartButton = tk.Button(self.loginRegisterFrame,text="Cart", command=lambda: switchPages(currentPage,"cartPage"),font=(self.loginButtonFont,self.loginButtonFontSize)).grid(row=0,column=0,padx=self.loginRegisterPadX)
-        self.loginButton = tk.Button(self.loginRegisterFrame,text="Login",command=lambda: switchPages(currentPage,"loginPage"),font=(self.loginButtonFont,self.loginButtonFontSize)).grid(row=0,column=1,padx=self.loginRegisterPadX)
+
         self.registerButton = tk.Button(self.loginRegisterFrame,text="Register",command=lambda: switchPages(currentPage,"registerPage"),font=(self.loginButtonFont,self.loginButtonFontSize)).grid(row=0,column=2,padx=self.loginRegisterPadX)
+
+    def insertLoginOrLogoutButton(self):
+        print("It Passed!")
+        if userClass.currentAccount == 0:
+            self.logoutButton.grid_forget()
+            self.loginButton.grid(row=0, column=1,padx=self.loginRegisterPadX)
+        else:
+            self.loginButton.grid_forget()
+            self.logoutButton.grid(row=0, column=1, padx=self.loginRegisterPadX)
 
     def insertDropDownMenus(self):
         self.mainMenuFrame = tk.Frame(self.mainFrame,bg=mainMenuWebsiteColor)
@@ -254,6 +257,7 @@ class LoginPage:
         else:
             userClass.switchAccounts(userObject)
             topMenu.updateWelcomeLabel()
+            topMenu.insertLoginOrLogoutButton()
             switchPages(currentPage,"homePage")
 
 
@@ -647,6 +651,24 @@ def switchPages(openedPage, desiredPage):
     currentPage = desiredPage
 
 
+def logUserOut():
+    global topMenu
+
+    userClass.currentAccount = 0
+    topMenu.insertLoginOrLogoutButton()
+    topMenu.updateWelcomeLabel()
+
+
+# Global Website Variables
+root = tk.Tk()
+# Creates instances of all pages
+topMenu = TopMenu(root)
+homePage = HomePage(root)
+loginPage = LoginPage(root)
+registerPage = RegisterPage(root)
+computerPartsPage = ComputerPartsPage(root)
+
+
 def startGUI():
     global root
     global topMenu
@@ -655,20 +677,9 @@ def startGUI():
     global registerPage
     global computerPartsPage
 
-    root = tk.Tk()
     root.title("TEST TITLE")
     root.geometry("854x480")
-
-    # Creates instances of all pages
-    topMenu = TopMenu(root)
-    homePage = HomePage(root)
-    loginPage = LoginPage(root)
-    registerPage = RegisterPage(root)
-    computerPartsPage = ComputerPartsPage(root)
 
     # Sets up main page
     homePage.insertMainFrame()
     topMenu.insertMainFrame()
-
-
-

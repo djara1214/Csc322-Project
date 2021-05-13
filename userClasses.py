@@ -1,9 +1,6 @@
 # File name and location of user list
 userListFile = "userList.txt"
 
-# Where current account will be stored
-currentAccount = 0
-
 
 class User:
     # User type used to indicate what privileges a user has or doesn't
@@ -18,9 +15,10 @@ class RegisteredUser(User):
     # Warning and suspension system
     warnings = 0
     suspended = False
+    currentBalance = 0
 
     # Initialization of class
-    def __init__(self,userType,userName,password,warnings,suspended):
+    def __init__(self,userType,userName,password,warnings,suspended,balance):
         self.userType = userType
 
         self.userName = userName
@@ -28,6 +26,7 @@ class RegisteredUser(User):
 
         self.warnings = int(warnings)
         self.suspended = (suspended == 'True')
+        self.currentBalance = float(balance)
 
     # Logic when printing a class
     def __str__(self):
@@ -51,6 +50,7 @@ class ComputerCompany(RegisteredUser):
 
 class DeliveryCompany(RegisteredUser):
     userType = "Delivery Company"
+
 
 # Overwrites all users in file and writes: O(n*k) Runtime (n is # of users and k is # of variables for each user)
 def writeAccountsToFile(userList):
@@ -149,6 +149,10 @@ def switchAccounts(classObject):
     global currentAccount
 
     currentAccount = classObject
+
+
+# Where current account will be stored
+currentAccount = 0
 
 
 # Only runs code if running straight from script and not from an import
