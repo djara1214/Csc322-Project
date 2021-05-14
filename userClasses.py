@@ -206,6 +206,20 @@ def overwriteUser(userInstance):
     file.writelines(data)
 
 
+def giveWarning(userEmail):
+    userClass = getAccountWithEmail(userEmail)
+    userClass.warnings += 1
+    overwriteUser(userClass)
+    if userClass.warnings > 2:
+        suspend(userEmail)
+
+
+def suspend(userEmail):
+    userClass = getAccountWithEmail(userEmail)
+    userClass.suspended(True)
+    overwriteUser(userClass)
+
+
 # Only runs code if running straight from script and not from an import
 if __name__ == '__main__':
 

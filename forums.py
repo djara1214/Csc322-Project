@@ -32,9 +32,22 @@ def WriteToForum(comment):
     file.close()
 
 
+def censor(sentence):
+    badwords = ["fuck","shit","hell","bitch","motherfucker","ass"]
+
+    sentence = sentence.lower()
+    sentence = sentence.split()
+
+    for index, word in enumerate(sentence):
+        if any(badword in word for badword in badwords):
+            sentence[index] = "".join(['*' if c.isalpha() else c for c in word])
+
+    return " ".join(sentence)
+
+
 def AddComments(forumPage):
     global commentList
-
+    commentList = []
     file = open(Forums, "r")
     for line in file:
         # String is split and variables are stored in list

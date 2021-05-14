@@ -13,3 +13,4 @@ Store Clerk|email11@gmail.com|Gina|parakeet05|0|False|200|
 Store Manager|email12@gmail.com|Johany|monkey14|0|False|200|
 Store Manager|email13@gmail.com|Arielis|snake09|0|False|200|
 Store Manager|email14@gmail.com|Namir|squirrel08|0|False|200|
+Registered User|test25@gmail.com|Johany|123|0|False|150.0|

@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from computerPartsClasses import generalFilter as comParts
 import userClasses as userClass
+import computerPartsClasses as comParts
+import forums as forum
 
 # Todo: Create and Design Cart
 # Todo: Create and Connect Forums Page
@@ -27,6 +28,8 @@ currentPage = "homePage"
 mainItemList = []
 filteredItemList = []
 
+listPage = 0
+
 
 class TopMenu:
     global topMenuWebsiteColor
@@ -43,6 +46,8 @@ class TopMenu:
     titleLabel = 0
     # Label that displays name
     usernameWelcomeLabel = 0
+
+    cartAmount = 0
 
     # Buttons for login, register, and cart
     loginButton = 0
@@ -100,6 +105,10 @@ class TopMenu:
 
         self.insertLoginOrLogoutButton()
 
+    def increaseCartQuantity(self):
+        self.cartAmount += 1
+        self.cartButton['text'] = "("+str(self.cartAmount)+")"+" Cart"
+
     # Enables and disables login and register button based on if an account is signed in
     def insertLoginOrLogoutButton(self):
         if userClass.currentAccount == 0:
@@ -117,7 +126,7 @@ class TopMenu:
 
         self.homeButton = tk.Button(self.mainMenuFrame,text="Home",command=lambda: switchPages(currentPage, "homePage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=0,padx=self.mainMenuPadX)
         self.computerPartsButton = tk.Button(self.mainMenuFrame,text="Computer Parts",command=lambda: switchPages(currentPage, "computerPartsPage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=1,padx=self.mainMenuPadX)
-        self.forumsButton = tk.Button(self.mainMenuFrame,text="Forums",font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=2,padx=self.mainMenuPadX)
+        self.forumsButton = tk.Button(self.mainMenuFrame,text="Forums",command=lambda: switchPages(currentPage, "forumPage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=2,padx=self.mainMenuPadX)
         self.accountInformationButton = tk.Button(self.mainMenuFrame,text="Account",command=lambda: switchPages(currentPage, "accountPage"),font=(self.subtitleFont,self.subtitleFontSize)).grid(row=0,column=3,padx=self.mainMenuPadX)
 
     def updateWelcomeLabel(self):
@@ -372,6 +381,8 @@ class RegisterPage:
 # Helper class used by Computer Parts Page Class
 class ComputerPartListing:
     global frameColor
+    global computerPartsPage
+
     mainFrame = 0
 
     # Reference to listing number so code knows which item it needs to bring up
@@ -427,7 +438,13 @@ class ComputerPartListing:
 
 
 def returnListingNumber(i):
-    print(i)
+    global computerPartsPage
+    global topMenu
+
+    if computerPartsPage != 0:
+        comParts.addToCart(computerPartsPage.listToDisplay[(computerPartsPage.listPage * 50) + i])
+
+    topMenu.increaseCartQuantity()
 
 
 class ComputerPartsPage:
@@ -460,12 +477,14 @@ class ComputerPartsPage:
 
     # Reference List
     listOfItemListings = []
+    listToDisplay = []
 
     # This is used so that the next button would list the next 50 in the filtered item and the last 50
-    listPage = 0
+
     canPressNext = True
 
     # Listing widgets
+    listPage = 0
     previousButton = 0
     nextButton = 0
 
@@ -601,7 +620,7 @@ class ComputerPartsPage:
         self.cpuCheck = tk.Checkbutton(self.filterFrame,text="CPU",font=(self.filterSubtitleFont,self.filterSubtitleFontSize),variable=self.cpuCheckbox).grid(row=6,column=0,padx=(self.filterPadXLeft,0),pady=self.filterSubtitlePadY)
         self.ramCheck = tk.Checkbutton(self.filterFrame, text="RAM",font=(self.filterSubtitleFont,self.filterSubtitleFontSize),variable=self.ramCheckbox).grid(row=6,column=2,padx=(self.filterPadXLeft,0),pady=self.filterSubtitlePadY)
         self.gpuCheck = tk.Checkbutton(self.filterFrame, text="GPU",font=(self.filterSubtitleFont,self.filterSubtitleFontSize),variable=self.gpuCheckbox).grid(row=7,column=0,padx=(self.filterPadXLeft,0))
-        self.casesCheck = tk.Checkbutton(self.filterFrame, text="Cases",font=(self.filterSubtitleFont,self.filterSubtitleFontSize),variable=self.casesCheck).grid(row=7,column=2,padx=(self.filterPadXLeft,0))
+        self.casesCheck = tk.Checkbutton(self.filterFrame, text="Cases",font=(self.filterSubtitleFont,self.filterSubtitleFontSize),variable=self.casesCheckbox).grid(row=7,column=2,padx=(self.filterPadXLeft,0))
         # Apply Filter Revert Buttons
         self.applyFilterButton = tk.Button(self.filterFrame,text="Apply",font=(self.titleFont,self.titleFontSize),command=self.applyFilters).grid(row=8,column=0,columnspan=2,padx=self.filterPadXLeft,pady=self.filterTitlePadY)
         self.revertFilterButton = tk.Button(self.filterFrame,text="Revert",font=(self.titleFont,self.titleFontSize),command=self.revertFilters).grid(row=8,column=2,columnspan=2,padx=self.filterPadXLeft,pady=self.filterTitlePadY)
@@ -611,17 +630,17 @@ class ComputerPartsPage:
         self.canPressNext = True
 
         if len(filteredItemList) == 0:
-            listToDisplay = mainItemList
+            self.listToDisplay = mainItemList
         else:
-            listToDisplay = filteredItemList
+            self.listToDisplay = filteredItemList
 
         for index in range(50):
             listingIndex = index + (50 * self.listPage)
-            if index >= len(listToDisplay) - (50 * self.listPage):
+            if index >= len(self.listToDisplay) - (50 * self.listPage):
                 self.listOfItemListings[index].mainFrame.grid_forget()
                 self.canPressNext = False
             else:
-                self.listOfItemListings[index].updateListing(listToDisplay[listingIndex].name,"Company: "+listToDisplay[listingIndex].company,"Computer Part: "+listToDisplay[listingIndex].itemType,"$ "+listToDisplay[listingIndex].priceDisplay)
+                self.listOfItemListings[index].updateListing(self.listToDisplay[listingIndex].name,"Company: "+self.listToDisplay[listingIndex].company,"Computer Part: "+self.listToDisplay[listingIndex].itemType,"$ "+self.listToDisplay[listingIndex].priceDisplay)
                 self.listOfItemListings[index].mainFrame.grid(row=index + 1, column=0, columnspan=2, padx=self.listingPadX, pady=self.listingPadY)
 
     def increaseListPage(self):
@@ -674,7 +693,7 @@ class ComputerPartsPage:
             argumentToApply[indexToInsert][2].append("CPU")
         if self.ramCheckbox.get() == 1:
             argumentToApply[indexToInsert][1].append("itemType")
-            argumentToApply[indexToInsert][2].append("Ram")
+            argumentToApply[indexToInsert][2].append("RAM")
         if self.gpuCheckbox.get() == 1:
             argumentToApply[indexToInsert][1].append("itemType")
             argumentToApply[indexToInsert][2].append("GPU")
@@ -686,7 +705,7 @@ class ComputerPartsPage:
         if argumentToApply[indexToInsert][1] == []:
             argumentToApply.pop(indexToInsert)
 
-        filteredItemList = comParts(mainItemList,argumentToApply)
+        filteredItemList = comParts.generalFilter(mainItemList,argumentToApply)
         self.updateListings()
 
         # Moves scrollbar back to top
@@ -786,6 +805,99 @@ class AccountPage:
             self.currentBalanceLabel['text'] = ""
 
 
+class ForumPage:
+    global currentPageColor
+    global frameColor
+    mainFrame = 0
+
+    scrollable_frame = 0
+    scrollbar = 0
+
+    # Page Variables
+    forumPage = 1
+    forumComments = []
+    listOfWidget = []
+
+    row = 0
+    previousButton = 0
+    nextButton = 0
+
+    # GUI Attributes
+    titleFont = "Arial"
+    titleFontSize = 30
+    canvasSize = 300
+    accountInfoPaddingY = 20
+
+    def __init__(self, tkRoot):
+        self.mainFrame = tk.Frame(tkRoot, bg=currentPageColor)
+
+        canvas = tk.Canvas(self.mainFrame, bg=currentPageColor)
+
+        self.scrollbar = tk.Scrollbar(self.mainFrame, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = tk.Frame(canvas, bg=currentPageColor)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+
+        # Section which adds all the features
+        self.createMainPage()
+
+    def insertMainFrame(self):
+        relativeY = 0.2
+        self.mainFrame.place(rely=relativeY,relwidth=1,relheight=1-relativeY)
+
+    def removeMainFrame(self):
+        self.mainFrame.place_forget()
+
+    def createMainPage(self):
+        self.showMessages()
+        self.placeButtons()
+
+    def showMessages(self):
+        forum.AddComments(self.forumPage)
+        self.row = 0
+        for comment in forum.commentList:
+            self.listOfWidget.append(tk.Label(self.scrollable_frame,text=comment.name,font=(self.titleFont,self.titleFontSize)))
+            self.listOfWidget[len(self.listOfWidget)-1].grid(row=self.row,column=0)
+            self.listOfWidget.append(tk.Label(self.scrollable_frame,text=comment.comment,font=(self.titleFont,self.titleFontSize)))
+            self.listOfWidget[len(self.listOfWidget)-1].grid(row=self.row,column=1)
+
+            self.row += 1
+
+    def placeButtons(self):
+        self.previousButton = tk.Button(self.scrollable_frame,text="Previous Chat",command=self.decrementChat,font=(self.titleFont,self.titleFontSize))
+        self.previousButton.grid(row=self.row,column=0)
+        self.nextButton = tk.Button(self.scrollable_frame,text="Next Chat",command=self.incrementChat,font=(self.titleFont,self.titleFontSize))
+        self.nextButton.grid(row=self.row,column=1)
+
+        self.row += 1
+
+    def incrementChat(self):
+        self.clearMessages()
+        self.forumPage += 1
+        self.showMessages()
+
+    def decrementChat(self):
+        self.clearMessages()
+        self.forumPage -= 1
+        self.showMessages()
+
+    def clearMessages(self):
+        for widget in self.listOfWidget:
+            widget.destroy()
+        self.listOfWidget = []
+
+
 def switchPages(openedPage, desiredPage):
     global currentPage
 
@@ -817,6 +929,7 @@ loginPage = LoginPage(root)
 registerPage = RegisterPage(root)
 accountPage = AccountPage(root)
 computerPartsPage = ComputerPartsPage(root)
+forumPage = ForumPage(root)
 
 
 def startGUI():
